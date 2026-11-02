@@ -9,10 +9,7 @@ static void PrintAssets(IReadOnlyList<Asset> assets)
 	string header = $"{"Type",-10} | {"Brand",-10} | {"Model",-20} | {"Office",-15} | {"Price Local",10} | {"Price USD",10} | {"Purchase Date"}";
 
 	Console.WriteLine(new string('-', header.Length));
-	
 	Console.WriteLine(header);
-
-	Console.WriteLine(new string('-', header.Length));
 	Console.WriteLine(new string('-', header.Length));
 
 	foreach (var asset in assets)
