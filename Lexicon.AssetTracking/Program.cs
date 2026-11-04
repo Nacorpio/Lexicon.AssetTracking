@@ -33,6 +33,12 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 
 	var assets = assetManager.GetSortedAssets();
 
+	if (assets.Count is 0)
+	{
+		Console.WriteLine("No assets found.");
+		return;
+	}
+
 	var maxTypeLength = GetMaxLength(assets, "Type", a => a.Type.ToString());
 	var maxBrandLength = GetMaxLength(assets, "Brand", a => a.Brand);
 	var maxModelLength = GetMaxLength(assets, "Model", a => a.Model);
