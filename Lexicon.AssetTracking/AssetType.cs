@@ -1,9 +1,8 @@
-﻿namespace Lexicon.AssetTracking
+﻿namespace Lexicon.AssetTracking;
+
+public enum AssetType 
 {
-	public enum AssetType 
-	{
-		Laptop,
-		Phone,
-		Desktop
-	}
+	Laptop,
+	Phone,
+	Desktop
 }
