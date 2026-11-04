@@ -6,7 +6,24 @@ static void PrintAssets(IReadOnlyList<Asset> assets)
 {
 	Console.WriteLine("ASSET LIST");
 
-	string header = $"{"Type",-10} | {"Brand",-10} | {"Model",-20} | {"Office",-15} | {"Price Local",10} | {"Price USD",10} | {"Purchase Date"}";
+	var maxTypeLength = GetMaxLength(assets, "Type", a => a.Type.ToString());
+	var maxBrandLength = GetMaxLength(assets, "Brand", a => a.Brand);
+	var maxModelLength = GetMaxLength(assets, "Model", a => a.Model);
+	var maxOfficeLength = GetMaxLength(assets, "Office", a => a.Office);
+
+	var maxPriceLocalLength = GetMaxLength(assets, "Price Local", a => a.PriceLocal.ToString());
+	var maxPriceUsdLength = GetMaxLength(assets, "Price USD", a => a.PriceUsd.ToString());
+
+	var maxPurchaseDateLength = GetMaxLength(assets, "Purchase Date", a => a.PurchaseDate.ToString("yyyy-MM-dd"));
+
+	string header = 
+		$"{"Type".PadRight(maxTypeLength)} | " +
+		$"{"Brand".PadRight(maxBrandLength)} | " +
+		$"{"Model".PadRight(maxModelLength)} | " +
+		$"{"Office".PadRight(maxOfficeLength)} | " +
+		$"{"Price Local".PadRight(maxPriceLocalLength)} | " +
+		$"{"Price USD".PadRight(maxPriceUsdLength)} | " +
+		$"{"Purchase Date".PadRight(maxPurchaseDateLength)}";
 
 	Console.WriteLine(new string('-', header.Length));
 	Console.WriteLine(header);
@@ -18,12 +35,21 @@ static void PrintAssets(IReadOnlyList<Asset> assets)
 		
 		Console.ForegroundColor = GetStatusColor(status);
 
-		Console.WriteLine($"{asset.Type,-10} | {asset.Brand,-10} | {asset.Model,-20} | {asset.Office,-15} | " +
-			$"{asset.PriceLocal,10} | {asset.PriceUsd,10} | {asset.PurchaseDate:yyyy-MM-dd}");
+		Console.WriteLine(
+			$"{asset.Type.ToString().PadRight(maxTypeLength)} | " +
+			$"{asset.Brand.PadRight(maxBrandLength)} | " +
+			$"{asset.Model.PadRight(maxModelLength)} | " +
+			$"{asset.Office.PadRight(maxOfficeLength)} | " +
+			$"{asset.PriceLocal.ToString().PadRight(maxPriceLocalLength)} | " +
+			$"{asset.PriceUsd.ToString().PadRight(maxPriceUsdLength)} | " +
+			$"{asset.PurchaseDate.ToString("yyyy-MM-dd").PadRight(maxPurchaseDateLength)}");
 
 		Console.ResetColor();
 	}
 }
+
+static int GetMaxLength<T>(IEnumerable<T> items, string column, Func<T, string> selector) =>
+	Math.Max(column.Length, items.Max(item => selector(item).Length));
 
 static ConsoleColor GetStatusColor(AssetStatus status) =>
 	status switch
