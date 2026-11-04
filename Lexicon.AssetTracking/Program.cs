@@ -29,6 +29,8 @@ static void AddSampleAssets(AssetManager assetManager, DateTime today)
 
 static void PrintAssets(AssetManager assetManager, DateTime today)
 {
+	const string Separator = " | ";
+
 	var columnDefs = new List<ColumnDefinition>
 	{
 		new("Office", ColumnAlignment.Left, a => a.Office.ToString()),
@@ -44,65 +46,32 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 	ConsoleHelper.Print("ASSET LIST");
 	ConsoleHelper.PrintLine();
 
-	var assets = assetManager.GetSortedAssets();
+	var assets = assetManager.GetSortedAssets();       // once
 
-	if (assets.Count is 0)
+	if (assets.Count is 0)                             // guard BEFORE any Max()
 	{
 		Console.WriteLine("No assets found.");
 		return;
 	}
 
-	foreach (var columnDef in columnDefs)
-	{
-		var maxLength = GetMaxLength(assets, columnDef.Header, columnDef.ValueSelector);
+	int[] widths = [.. columnDefs.Select(cd =>
+		TableHelper.GetMaxLength(assets, cd.Header, cd.ValueSelector))];
 
-		var header = columnDef.Alignment switch
-		{
-			ColumnAlignment.Left => columnDef.Header.PadRight(maxLength),
-			ColumnAlignment.Right => columnDef.Header.PadLeft(maxLength),
+	var lineLength = widths.Sum() + (columnDefs.Count - 1) * Separator.Length;
 
-			_ => throw new InvalidOperationException($"Unknown alignment: {columnDef.Alignment}")
-		};
-
-		ConsoleHelper.Print(header);
-		ConsoleHelper.Print(" | ");
-	}
-
-	ConsoleHelper.PrintLine();
-	ConsoleHelper.PrintLine(new string('-', columnDefs.Sum(cd => GetMaxLength(assets, cd.Header, cd.ValueSelector) + 3)));
+	ConsoleHelper.PrintLine(new string('-', lineLength));
+	TableHelper.PrintRow(columnDefs, widths, Separator, cd => cd.Header);
+	ConsoleHelper.PrintLine(new string('-', lineLength));
 
 	foreach (var asset in assets)
 	{
-		foreach (var columnDef in columnDefs)
-		{
-			var maxLength = GetMaxLength(assets, columnDef.Header, columnDef.ValueSelector);
-			var value = columnDef.ValueSelector(asset);
-
-			var formattedValue = columnDef.Alignment switch
-			{
-				ColumnAlignment.Left => value.PadRight(maxLength),
-				ColumnAlignment.Right => value.PadLeft(maxLength),
-				_ => throw new InvalidOperationException($"Unknown alignment: {columnDef.Alignment}")
-			};
-
-			var status = asset.GetStatus(today);
-			var color = GetStatusColor(status);
-
-			ConsoleHelper.Print(formattedValue, color);
-			ConsoleHelper.Print(" | ");
-		}
-
-		ConsoleHelper.PrintLine();
+		var color = GetStatusColor(asset.GetStatus(today));
+		TableHelper.PrintRow(columnDefs, widths, Separator, cd => cd.ValueSelector(asset), color);
 	}
 }
 
-
 static string FormatPriceLocal(Asset asset) =>
 	$"{asset.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(asset.Office)}";
-
-
-static int GetMaxLength<T>(IEnumerable<T> items, string column, Func<T, string> selector) =>
-	Math.Max(column.Length, items.Max(item => selector(item).Length));
 
 static string GetStatusString(Asset asset, DateTime today) =>
 	asset.GetStatus(today) switch
