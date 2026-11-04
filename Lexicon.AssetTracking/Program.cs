@@ -1,15 +1,37 @@
 ﻿using Lexicon.AssetTracking;
 
-PrintAssets(GetSampleAssets(DateTime.Now));
+var assetManager = new AssetManager();
 
-static void PrintAssets(IReadOnlyList<Asset> assets)
+assetManager.AddAsset(new Computer(
+	AssetType.Laptop,
+	"Dell", "XPS 13", "New York",
+	1200.00m, 1500.00m,
+	new DateTime(2021, 5, 15)));
+
+assetManager.AddAsset(new MobilePhone(
+	"Apple", "iPhone 13", "Los Angeles",
+	999.00m, 1200.00m,
+	new DateTime(2022, 3, 10)));
+
+assetManager.AddAsset(new Computer(
+	AssetType.Desktop,
+	"HP", "Pavilion", "Chicago",
+	800.00m, 1000.00m,
+	new DateTime(2020, 11, 5)));
+
+PrintAssets(assetManager, DateTime.Now);
+
+static void PrintAssets(AssetManager assetManager, DateTime today)
 {
 	Console.WriteLine("ASSET LIST");
+
+	var assets = assetManager.GetSortedAssets();
 
 	var maxTypeLength = GetMaxLength(assets, "Type", a => a.Type.ToString());
 	var maxBrandLength = GetMaxLength(assets, "Brand", a => a.Brand);
 	var maxModelLength = GetMaxLength(assets, "Model", a => a.Model);
 	var maxOfficeLength = GetMaxLength(assets, "Office", a => a.Office);
+	var maxStatusLength = GetMaxLength(assets, "Status", a => a.GetStatus(today).ToString());
 
 	var maxPriceLocalLength = GetMaxLength(assets, "Price Local", a => a.PriceLocal.ToString());
 	var maxPriceUsdLength = GetMaxLength(assets, "Price USD", a => a.PriceUsd.ToString());
@@ -21,6 +43,7 @@ static void PrintAssets(IReadOnlyList<Asset> assets)
 		$"{"Brand".PadRight(maxBrandLength)} | " +
 		$"{"Model".PadRight(maxModelLength)} | " +
 		$"{"Office".PadRight(maxOfficeLength)} | " +
+		$"{"Status".PadRight(maxStatusLength)} | " +
 		$"{"Price Local".PadRight(maxPriceLocalLength)} | " +
 		$"{"Price USD".PadRight(maxPriceUsdLength)} | " +
 		$"{"Purchase Date".PadRight(maxPurchaseDateLength)}";
@@ -31,7 +54,7 @@ static void PrintAssets(IReadOnlyList<Asset> assets)
 
 	foreach (var asset in assets)
 	{
-		var status = asset.GetStatus(DateTime.Now);
+		var status = asset.GetStatus(today);
 		
 		Console.ForegroundColor = GetStatusColor(status);
 
@@ -40,6 +63,7 @@ static void PrintAssets(IReadOnlyList<Asset> assets)
 			$"{asset.Brand.PadRight(maxBrandLength)} | " +
 			$"{asset.Model.PadRight(maxModelLength)} | " +
 			$"{asset.Office.PadRight(maxOfficeLength)} | " +
+			$"{status.ToString().PadRight(maxStatusLength)} | " +
 			$"{asset.PriceLocal.ToString().PadRight(maxPriceLocalLength)} | " +
 			$"{asset.PriceUsd.ToString().PadRight(maxPriceUsdLength)} | " +
 			$"{asset.PurchaseDate.ToString("yyyy-MM-dd").PadRight(maxPurchaseDateLength)}");
@@ -59,27 +83,3 @@ static ConsoleColor GetStatusColor(AssetStatus status) =>
 
 		_ => ConsoleColor.White
 	};
-
-static IReadOnlyList<Asset> GetSampleAssets(DateTime today)
-{
-	// Purchased exactly 3 years ago + N months => end of life is N months from today.
-	DateTime EndsIn(int months) => today.AddYears(-3).AddMonths(months);
-
-	return
-	[
-		new Computer(AssetType.Laptop, "Apple", "MacBook Pro", "Sweden",
-			25000m, 2500m, EndsIn(-2)),            // expired      -> RED
-
-		new MobilePhone("Nokia", "XR20", "Turkey",
-			9000m, 800m, EndsIn(2)),               // 2 months left -> RED
-
-		new Computer(AssetType.Laptop, "Asus", "ZenBook", "USA",
-			15000m, 1500m, EndsIn(4)),             // 4 months left -> YELLOW
-
-		new Computer(AssetType.Desktop, "Dell", "OptiPlex 7080", "Sweden",
-			15000m, 1500m, today.AddYears(-1)),    // 2 years left  -> blank
-
-		new MobilePhone("Samsung", "Galaxy S23", "Sweden",
-			10000m, 1000m, today.AddMonths(-6))    // 2.5 years left -> blank
-	];
-}
