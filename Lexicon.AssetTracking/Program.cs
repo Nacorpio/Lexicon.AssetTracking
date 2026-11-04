@@ -56,8 +56,8 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 		$"{"Brand".PadRight(maxBrandLength)} | " +
 		$"{"Model".PadRight(maxModelLength)} | " +
 		$"{"Purchase Date".PadRight(maxPurchaseDateLength)} | " +
-		$"{"Price Local".PadRight(maxPriceLocalLength)} | " +
-		$"{"Price USD".PadRight(maxPriceUsdLength)} | " +
+		$"{"Price Local".PadLeft(maxPriceLocalLength)} | " +
+		$"{"Price USD".PadLeft(maxPriceUsdLength)} | " +
 		$"{"Status".PadRight(maxStatusLength)}";
 
 	Console.WriteLine(new string('-', header.Length));
@@ -81,13 +81,13 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 		Print($"{asset.Model.PadRight(maxModelLength)}", color);
 		Print(" | ");
 
-		PrintLine($"{asset.PurchaseDate.ToString("yyyy-MM-dd").PadRight(maxPurchaseDateLength)}", color);
+		Print($"{asset.PurchaseDate.ToString("yyyy-MM-dd").PadRight(maxPurchaseDateLength)}", color);
 		Print(" | ");
 
-		Print($"{($"{asset.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(asset.Office)}").PadRight(maxPriceLocalLength)}", color);
+		Print($"{($"{asset.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(asset.Office)}").PadLeft(maxPriceLocalLength)}", color);
 		Print(" | ");
 
-		Print($"{($"{asset.PriceUsd:F2} USD").PadRight(maxPriceUsdLength)}", color);
+		Print($"{($"{asset.PriceUsd:F2} USD").PadLeft(maxPriceUsdLength)}", color);
 		Print(" | ");
 
 		PrintLine($"{GetStatusString(asset, today).PadRight(maxStatusLength)}", color);
