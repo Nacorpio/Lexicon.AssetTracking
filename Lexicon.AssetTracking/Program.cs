@@ -19,7 +19,7 @@ assetManager.AddAsset(new Computer(
 	800.00m, 1000.00m,
 	new DateTime(2020, 11, 5)));
 
-PrintAssets(assetManager, DateTime.Now);
+PrintAssets(assetManager, DateTime.Today);
 
 static void PrintAssets(AssetManager assetManager, DateTime today)
 {
