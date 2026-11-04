@@ -29,7 +29,20 @@ static void AddSampleAssets(AssetManager assetManager, DateTime today)
 
 static void PrintAssets(AssetManager assetManager, DateTime today)
 {
-	Console.WriteLine("ASSET LIST");
+	var columnDefs = new List<ColumnDefinition>
+	{
+		new("Office", ColumnAlignment.Left, a => a.Office.ToString()),
+		new("Type", ColumnAlignment.Left, a => a.Type.ToString()),
+		new("Brand", ColumnAlignment.Left, a => a.Brand),
+		new("Model", ColumnAlignment.Left, a => a.Model),
+		new("Purchase Date", ColumnAlignment.Left, a => a.PurchaseDate.ToString("yyyy-MM-dd")),
+		new("Price Local", ColumnAlignment.Right, a => FormatPriceLocal(a)),
+		new("Price USD", ColumnAlignment.Right, a => $"{a.PriceUsd:F2} USD"),
+		new("Status", ColumnAlignment.Left, a => GetStatusString(a, today))
+	};
+
+	ConsoleHelper.Print("ASSET LIST");
+	ConsoleHelper.PrintLine();
 
 	var assets = assetManager.GetSortedAssets();
 
@@ -39,85 +52,54 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 		return;
 	}
 
-	var maxTypeLength = GetMaxLength(assets, "Type", a => a.Type.ToString());
-	var maxBrandLength = GetMaxLength(assets, "Brand", a => a.Brand);
-	var maxModelLength = GetMaxLength(assets, "Model", a => a.Model);
-	var maxOfficeLength = GetMaxLength(assets, "Office", a => a.Office.ToString());
-	var maxStatusLength = GetMaxLength(assets, "Status", a => GetStatusString(a, today));
+	foreach (var columnDef in columnDefs)
+	{
+		var maxLength = GetMaxLength(assets, columnDef.Header, columnDef.ValueSelector);
 
-	var maxPriceLocalLength = GetMaxLength(assets, "Price Local", a => FormatPriceLocal(a));
-	var maxPriceUsdLength = GetMaxLength(assets, "Price USD", a => $"{a.PriceUsd:F2} USD");
+		var header = columnDef.Alignment switch
+		{
+			ColumnAlignment.Left => columnDef.Header.PadRight(maxLength),
+			ColumnAlignment.Right => columnDef.Header.PadLeft(maxLength),
 
-	var maxPurchaseDateLength = GetMaxLength(assets, "Purchase Date", a => a.PurchaseDate.ToString("yyyy-MM-dd"));
+			_ => throw new InvalidOperationException($"Unknown alignment: {columnDef.Alignment}")
+		};
 
-	string header =
-		$"{"Office".PadRight(maxOfficeLength)} | " +
-		$"{"Type".PadRight(maxTypeLength)} | " +
-		$"{"Brand".PadRight(maxBrandLength)} | " +
-		$"{"Model".PadRight(maxModelLength)} | " +
-		$"{"Purchase Date".PadRight(maxPurchaseDateLength)} | " +
-		$"{"Price Local".PadLeft(maxPriceLocalLength)} | " +
-		$"{"Price USD".PadLeft(maxPriceUsdLength)} | " +
-		$"{"Status".PadRight(maxStatusLength)}";
+		ConsoleHelper.Print(header);
+		ConsoleHelper.Print(" | ");
+	}
 
-	Console.WriteLine(new string('-', header.Length));
-	Console.WriteLine(header);
-	Console.WriteLine(new string('-', header.Length));
+	ConsoleHelper.PrintLine();
+	ConsoleHelper.PrintLine(new string('-', columnDefs.Sum(cd => GetMaxLength(assets, cd.Header, cd.ValueSelector) + 3)));
 
 	foreach (var asset in assets)
 	{
-		var status = asset.GetStatus(today);
-		var color = GetStatusColor(status);
+		foreach (var columnDef in columnDefs)
+		{
+			var maxLength = GetMaxLength(assets, columnDef.Header, columnDef.ValueSelector);
+			var value = columnDef.ValueSelector(asset);
 
-		Print($"{asset.Office.ToString().PadRight(maxOfficeLength)}", color);
-		Print(" | ");
+			var formattedValue = columnDef.Alignment switch
+			{
+				ColumnAlignment.Left => value.PadRight(maxLength),
+				ColumnAlignment.Right => value.PadLeft(maxLength),
+				_ => throw new InvalidOperationException($"Unknown alignment: {columnDef.Alignment}")
+			};
 
-		Print($"{asset.Type.ToString().PadRight(maxTypeLength)}", color);
-		Print(" | ");
+			var status = asset.GetStatus(today);
+			var color = GetStatusColor(status);
 
-		Print($"{asset.Brand.PadRight(maxBrandLength)}", color);
-		Print(" | ");
+			ConsoleHelper.Print(formattedValue, color);
+			ConsoleHelper.Print(" | ");
+		}
 
-		Print($"{asset.Model.PadRight(maxModelLength)}", color);
-		Print(" | ");
-
-		Print($"{asset.PurchaseDate.ToString("yyyy-MM-dd").PadRight(maxPurchaseDateLength)}", color);
-		Print(" | ");
-
-		Print($"{(FormatPriceLocal(asset)).PadLeft(maxPriceLocalLength)}", color);
-		Print(" | ");
-
-		Print($"{($"{asset.PriceUsd:F2} USD").PadLeft(maxPriceUsdLength)}", color);
-		Print(" | ");
-
-		PrintLine($"{GetStatusString(asset, today).PadRight(maxStatusLength)}", color);
+		ConsoleHelper.PrintLine();
 	}
 }
 
-static void Print(string text, ConsoleColor? color = null)
-{
-	if (color.HasValue)
-	{
-		Console.ForegroundColor = color.Value;
-	}
-
-	Console.Write(text);
-	Console.ResetColor();
-}
 
 static string FormatPriceLocal(Asset asset) =>
 	$"{asset.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(asset.Office)}";
 
-static void PrintLine(string text, ConsoleColor? color = null)
-{
-	if (color.HasValue)
-	{
-		Console.ForegroundColor = color.Value;
-	}
-
-	Console.WriteLine(text);
-	Console.ResetColor();
-}
 
 static int GetMaxLength<T>(IEnumerable<T> items, string column, Func<T, string> selector) =>
 	Math.Max(column.Length, items.Max(item => selector(item).Length));
