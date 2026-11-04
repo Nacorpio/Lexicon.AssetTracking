@@ -1,25 +1,31 @@
 ﻿using Lexicon.AssetTracking;
 
 var assetManager = new AssetManager();
+var today = DateTime.Today;
 
-assetManager.AddAsset(new Computer(
-	AssetType.Laptop,
-	"Dell", "XPS 13", "New York",
-	1200.00m, 1500.00m,
-	new DateTime(2021, 5, 15)));
+AddSampleAssets(assetManager, today);
+PrintAssets(assetManager, today);
 
-assetManager.AddAsset(new MobilePhone(
-	"Apple", "iPhone 13", "Los Angeles",
-	999.00m, 1200.00m,
-	new DateTime(2022, 3, 10)));
+static void AddSampleAssets(AssetManager assetManager, DateTime today)
+{
+	// Purchased exactly 3 years ago + N months => end of life is N months from today.
+	DateTime EndsIn(int months) => today.AddYears(-3).AddMonths(months);
 
-assetManager.AddAsset(new Computer(
-	AssetType.Desktop,
-	"HP", "Pavilion", "Chicago",
-	800.00m, 1000.00m,
-	new DateTime(2020, 11, 5)));
+	assetManager.AddAsset(new Computer(AssetType.Laptop, "Apple", "MacBook Pro", "Sweden",
+		25000m, 2500m, EndsIn(-2)));                 // expired        -> RED
 
-PrintAssets(assetManager, DateTime.Today);
+	assetManager.AddAsset(new MobilePhone("Nokia", "XR20", "Turkey",
+		24000m, 800m, EndsIn(2)));                   // 2 months left  -> RED
+
+	assetManager.AddAsset(new Computer(AssetType.Laptop, "Asus", "ZenBook", "USA",
+		1500m, 1500m, EndsIn(4)));                   // 4 months left  -> YELLOW
+
+	assetManager.AddAsset(new Computer(AssetType.Desktop, "Dell", "OptiPlex 7080", "Sweden",
+		15000m, 1500m, today.AddYears(-1)));         // 2 years left   -> blank
+
+	assetManager.AddAsset(new MobilePhone("Samsung", "Galaxy S23", "USA",
+		1000m, 1000m, today.AddMonths(-6)));         // 2.5 years left -> blank
+}
 
 static void PrintAssets(AssetManager assetManager, DateTime today)
 {
