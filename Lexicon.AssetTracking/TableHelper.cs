@@ -7,11 +7,10 @@ public static class TableHelper
 		{
 			ColumnAlignment.Left => text.PadRight(width),
 			ColumnAlignment.Right => text.PadLeft(width),
+
 			_ => throw new InvalidOperationException($"Unknown alignment: {alignment}")
 		};
 
 	public static int GetMaxLength<T>(IEnumerable<T> items, string column, Func<T, string> selector) =>
 		Math.Max(column.Length, items.Max(item => selector(item).Length));
-
-	
 }

@@ -5,9 +5,7 @@ public static class ConsoleHelper
 	public static void Print(string text, ConsoleColor? color = null)
 	{
 		if (color.HasValue)
-		{
 			Console.ForegroundColor = color.Value;
-		}
 
 		Console.Write(text);
 		Console.ResetColor();
@@ -16,9 +14,7 @@ public static class ConsoleHelper
 	public static void PrintLine(string text, ConsoleColor? color = null)
 	{
 		if (color.HasValue)
-		{
 			Console.ForegroundColor = color.Value;
-		}
 
 		Console.WriteLine(text);
 		Console.ResetColor();
@@ -39,8 +35,7 @@ public static class ConsoleHelper
 			if (i > 0)
 				ConsoleHelper.Print(separator);
 
-			var text = TableHelper.AlignText(getText(columnDefs[i]), widths[i], columnDefs[i].Alignment);
-			ConsoleHelper.Print(text, color);
+			ConsoleHelper.Print(TableHelper.AlignText(getText(columnDefs[i]), widths[i], columnDefs[i].Alignment), color);
 		}
 
 		ConsoleHelper.PrintLine();
