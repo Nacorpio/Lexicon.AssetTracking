@@ -45,8 +45,8 @@ internal class Asset
 
 	public AssetStatus GetStatus(DateTime currentDate)
 	{
-		var redFrom = EndOfLife.AddMonths(RedStatusMonths);
-		var yellowFrom = EndOfLife.AddMonths(YellowStatusMonths);
+		var redFrom = EndOfLife.AddMonths(-RedStatusMonths);
+		var yellowFrom = EndOfLife.AddMonths(-YellowStatusMonths);
 
 		if (currentDate >= EndOfLife || currentDate >= redFrom)
 			return AssetStatus.Red;
