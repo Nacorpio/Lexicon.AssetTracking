@@ -16,6 +16,14 @@ public static class CurrencyConverter
 		{ OfficeLocation.Turkey, "TRY" }
 	};
 
+	public static string GetCurrencyCode(OfficeLocation officeLocation)
+	{
+		if (!_officeLocationCurrencies.TryGetValue(officeLocation, out var currencyCode))
+			throw new ArgumentException($"Unsupported office location: {officeLocation}", nameof(officeLocation));
+
+		return currencyCode;
+	}
+
 	public static decimal GetExchangeRate(string currencyCode)
 	{
 		if (!_usdExchangeRates.TryGetValue(currencyCode, out var exchangeRate))
@@ -26,10 +34,11 @@ public static class CurrencyConverter
 
 	public static decimal ConvertFromUsd(decimal amountInUsd, OfficeLocation officeLocation)
 	{
-		if (!_officeLocationCurrencies.TryGetValue(officeLocation, out var currencyCode))
-			throw new ArgumentException($"Unsupported office location: {officeLocation}", nameof(officeLocation));
-
+		var currencyCode = GetCurrencyCode(officeLocation);
 		var exchangeRate = GetExchangeRate(currencyCode);
+
+		if (exchangeRate == 0)
+			throw new InvalidOperationException($"Exchange rate for currency code '{currencyCode}' is zero, cannot convert.");
 
 		return amountInUsd / exchangeRate;
 	}

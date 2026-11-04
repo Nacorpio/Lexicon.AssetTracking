@@ -1,6 +1,6 @@
 ﻿namespace Lexicon.AssetTracking
 {
-	internal class MobilePhone : Asset
+	public class MobilePhone : Asset
 	{
 		public MobilePhone(
 			string brand, 
