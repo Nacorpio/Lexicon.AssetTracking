@@ -7,25 +7,21 @@ public class Asset
 
 	public Asset(
 		AssetType type, 
-		string brand, string model, string office, 
-		decimal priceLocal, decimal priceUsd,
+		string brand, string model, 
+		OfficeLocation office, 
+		decimal priceUsd,
 		DateTime purchaseDate )
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(brand);
 		ArgumentException.ThrowIfNullOrWhiteSpace(model);
-		ArgumentException.ThrowIfNullOrWhiteSpace(office);
 
-		ArgumentOutOfRangeException.ThrowIfNegative(priceLocal);
 		ArgumentOutOfRangeException.ThrowIfNegative(priceUsd);
 
 		Type = type;
 		Brand = brand;
 		Model = model;
 		Office = office;
-
-		PriceLocal = priceLocal;
 		PriceUsd = priceUsd;
-
 		PurchaseDate = purchaseDate;
 	}
 
@@ -36,10 +32,12 @@ public class Asset
 
 	public DateTime PurchaseDate { get; init; }
 
-	public decimal PriceLocal { get; init; }
+	public decimal PriceLocal => CurrencyConverter
+		.ConvertFromUsd(PriceUsd, Office);
+
 	public decimal PriceUsd { get; init; }
 
-	public string Office { get; }
+	public OfficeLocation Office { get; }
 
 	public DateTime EndOfLife => PurchaseDate.AddYears(3);
 

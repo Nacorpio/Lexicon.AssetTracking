@@ -5,11 +5,10 @@
 		public MobilePhone(
 			string brand, 
 			string model,
-			string office, 
-			decimal priceLocal, 
+			OfficeLocation office, 
 			decimal priceUsd, 
 			DateTime purchaseDate) :
-			base(AssetType.Phone, brand, model, office, priceLocal, priceUsd, purchaseDate)
+			base(AssetType.Phone, brand, model, office, priceUsd, purchaseDate)
 		{
 		}
 	}

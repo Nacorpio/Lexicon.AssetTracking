@@ -12,8 +12,8 @@ public class AssetManager
 	public IReadOnlyList<Asset> GetAssets() => _assets;
 
 
-	public IReadOnlyList<Asset> GetAssetsByOffice(string office) =>
-		[.. _assets.Where(a => a.Office.Equals(office, StringComparison.OrdinalIgnoreCase))];
+	public IReadOnlyList<Asset> GetAssetsByOffice(OfficeLocation office) =>
+		[.. _assets.Where(a => a.Office == office)];
 
 	public IReadOnlyList<Asset> GetAssetsByType(AssetType type) =>
 		[.. _assets.Where(a => a.Type == type)];

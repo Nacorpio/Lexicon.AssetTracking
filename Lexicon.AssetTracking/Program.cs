@@ -11,20 +11,20 @@ static void AddSampleAssets(AssetManager assetManager, DateTime today)
 	// Purchased exactly 3 years ago + N months => end of life is N months from today.
 	DateTime EndsIn(int months) => today.AddYears(-3).AddMonths(months);
 
-	assetManager.AddAsset(new Computer(AssetType.Laptop, "Apple", "MacBook Pro", "Sweden",
-		25000m, 2500m, EndsIn(-2)));                 // expired        -> RED
+	assetManager.AddAsset(new Computer(AssetType.Laptop, "Apple", "MacBook Pro", OfficeLocation.Sweden,
+		2500m, EndsIn(-2)));                 // expired        -> RED
 
-	assetManager.AddAsset(new MobilePhone("Nokia", "XR20", "Turkey",
-		24000m, 800m, EndsIn(2)));                   // 2 months left  -> RED
+	assetManager.AddAsset(new MobilePhone("Nokia", "XR20", OfficeLocation.Turkey,
+		800m, EndsIn(2)));                   // 2 months left  -> RED
 
-	assetManager.AddAsset(new Computer(AssetType.Laptop, "Asus", "ZenBook", "USA",
-		1500m, 1500m, EndsIn(4)));                   // 4 months left  -> YELLOW
+	assetManager.AddAsset(new Computer(AssetType.Laptop, "Asus", "ZenBook", OfficeLocation.USA,
+		1500m, EndsIn(4)));                   // 4 months left  -> YELLOW
 
-	assetManager.AddAsset(new Computer(AssetType.Desktop, "Dell", "OptiPlex 7080", "Sweden",
-		15000m, 1500m, today.AddYears(-1)));         // 2 years left   -> blank
+	assetManager.AddAsset(new Computer(AssetType.Desktop, "Dell", "OptiPlex 7080", OfficeLocation.Sweden,
+		1500m, today.AddYears(-1)));         // 2 years left   -> blank
 
-	assetManager.AddAsset(new MobilePhone("Samsung", "Galaxy S23", "USA",
-		1000m, 1000m, today.AddMonths(-6)));         // 2.5 years left -> blank
+	assetManager.AddAsset(new MobilePhone("Samsung", "Galaxy S23", OfficeLocation.USA,
+		1000m, today.AddMonths(-6)));         // 2.5 years left -> blank
 }
 
 static void PrintAssets(AssetManager assetManager, DateTime today)
@@ -42,7 +42,7 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 	var maxTypeLength = GetMaxLength(assets, "Type", a => a.Type.ToString());
 	var maxBrandLength = GetMaxLength(assets, "Brand", a => a.Brand);
 	var maxModelLength = GetMaxLength(assets, "Model", a => a.Model);
-	var maxOfficeLength = GetMaxLength(assets, "Office", a => a.Office);
+	var maxOfficeLength = GetMaxLength(assets, "Office", a => a.Office.ToString());
 	var maxStatusLength = GetMaxLength(assets, "Status", a => GetStatusString(a, today));
 
 	var maxPriceLocalLength = GetMaxLength(assets, "Price Local", a => a.PriceLocal.ToString());
@@ -78,7 +78,7 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 		Print($"{asset.Model.PadRight(maxModelLength)}", color);
 		Print(" | ");
 
-		Print($"{asset.Office.PadRight(maxOfficeLength)}", color);
+		Print($"{asset.Office.ToString().PadRight(maxOfficeLength)}", color);
 		Print(" | ");
 
 		Print($"{GetStatusString(asset, today).PadRight(maxStatusLength)}", color);
