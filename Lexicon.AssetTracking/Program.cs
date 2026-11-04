@@ -45,7 +45,7 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 	var maxOfficeLength = GetMaxLength(assets, "Office", a => a.Office.ToString());
 	var maxStatusLength = GetMaxLength(assets, "Status", a => GetStatusString(a, today));
 
-	var maxPriceLocalLength = GetMaxLength(assets, "Price Local", a => $"{a.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(a.Office)}");
+	var maxPriceLocalLength = GetMaxLength(assets, "Price Local", a => FormatPriceLocal(a));
 	var maxPriceUsdLength = GetMaxLength(assets, "Price USD", a => $"{a.PriceUsd:F2} USD");
 
 	var maxPurchaseDateLength = GetMaxLength(assets, "Purchase Date", a => a.PurchaseDate.ToString("yyyy-MM-dd"));
@@ -84,7 +84,7 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 		Print($"{asset.PurchaseDate.ToString("yyyy-MM-dd").PadRight(maxPurchaseDateLength)}", color);
 		Print(" | ");
 
-		Print($"{($"{asset.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(asset.Office)}").PadLeft(maxPriceLocalLength)}", color);
+		Print($"{(FormatPriceLocal(asset)).PadLeft(maxPriceLocalLength)}", color);
 		Print(" | ");
 
 		Print($"{($"{asset.PriceUsd:F2} USD").PadLeft(maxPriceUsdLength)}", color);
@@ -104,6 +104,9 @@ static void Print(string text, ConsoleColor? color = null)
 	Console.Write(text);
 	Console.ResetColor();
 }
+
+static string FormatPriceLocal(Asset asset) =>
+	$"{asset.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(asset.Office)}";
 
 static void PrintLine(string text, ConsoleColor? color = null)
 {
