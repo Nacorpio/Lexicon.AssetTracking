@@ -46,9 +46,9 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 	ConsoleHelper.Print("ASSET LIST");
 	ConsoleHelper.PrintLine();
 
-	var assets = assetManager.GetSortedAssets();       // once
+	var assets = assetManager.GetSortedAssets();
 
-	if (assets.Count is 0)                             // guard BEFORE any Max()
+	if (assets.Count is 0)
 	{
 		Console.WriteLine("No assets found.");
 		return;
@@ -60,13 +60,14 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 	var lineLength = widths.Sum() + (columnDefs.Count - 1) * Separator.Length;
 
 	ConsoleHelper.PrintLine(new string('-', lineLength));
-	TableHelper.PrintRow(columnDefs, widths, Separator, cd => cd.Header);
+	ConsoleHelper.PrintRow(columnDefs, widths, Separator, cd => cd.Header);
 	ConsoleHelper.PrintLine(new string('-', lineLength));
 
 	foreach (var asset in assets)
 	{
 		var color = GetStatusColor(asset.GetStatus(today));
-		TableHelper.PrintRow(columnDefs, widths, Separator, cd => cd.ValueSelector(asset), color);
+
+		ConsoleHelper.PrintRow(columnDefs, widths, Separator, cd => cd.ValueSelector(asset), color);
 	}
 }
 
