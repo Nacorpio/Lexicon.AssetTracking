@@ -37,7 +37,7 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 	var maxBrandLength = GetMaxLength(assets, "Brand", a => a.Brand);
 	var maxModelLength = GetMaxLength(assets, "Model", a => a.Model);
 	var maxOfficeLength = GetMaxLength(assets, "Office", a => a.Office);
-	var maxStatusLength = GetMaxLength(assets, "Status", a => a.GetStatus(today).ToString());
+	var maxStatusLength = GetMaxLength(assets, "Status", a => GetStatusString(a, today));
 
 	var maxPriceLocalLength = GetMaxLength(assets, "Price Local", a => a.PriceLocal.ToString());
 	var maxPriceUsdLength = GetMaxLength(assets, "Price USD", a => a.PriceUsd.ToString());
@@ -61,25 +61,66 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 	foreach (var asset in assets)
 	{
 		var status = asset.GetStatus(today);
+		var color = GetStatusColor(status);
 		
-		Console.ForegroundColor = GetStatusColor(status);
+		Print($"{asset.Type.ToString().PadRight(maxTypeLength)}", color);
+		Print(" | ");
 
-		Console.WriteLine(
-			$"{asset.Type.ToString().PadRight(maxTypeLength)} | " +
-			$"{asset.Brand.PadRight(maxBrandLength)} | " +
-			$"{asset.Model.PadRight(maxModelLength)} | " +
-			$"{asset.Office.PadRight(maxOfficeLength)} | " +
-			$"{status.ToString().PadRight(maxStatusLength)} | " +
-			$"{asset.PriceLocal.ToString().PadRight(maxPriceLocalLength)} | " +
-			$"{asset.PriceUsd.ToString().PadRight(maxPriceUsdLength)} | " +
-			$"{asset.PurchaseDate.ToString("yyyy-MM-dd").PadRight(maxPurchaseDateLength)}");
+		Print($"{asset.Brand.PadRight(maxBrandLength)}", color);
+		Print(" | ");
 
-		Console.ResetColor();
+		Print($"{asset.Model.PadRight(maxModelLength)}", color);
+		Print(" | ");
+
+		Print($"{asset.Office.PadRight(maxOfficeLength)}", color);
+		Print(" | ");
+
+		Print($"{GetStatusString(asset, today).PadRight(maxStatusLength)}", color);
+		Print(" | ");
+
+		Print($"{asset.PriceLocal.ToString().PadRight(maxPriceLocalLength)}", color);
+		Print(" | ");
+
+		Print($"{asset.PriceUsd.ToString().PadRight(maxPriceUsdLength)}", color);
+		Print(" | ");
+
+		PrintLine($"{asset.PurchaseDate.ToString("yyyy-MM-dd").PadRight(maxPurchaseDateLength)}", color);
 	}
+}
+
+static void Print(string text, ConsoleColor? color = null)
+{
+	if (color.HasValue)
+	{
+		Console.ForegroundColor = color.Value;
+	}
+
+	Console.Write(text);
+	Console.ResetColor();
+}
+
+static void PrintLine(string text, ConsoleColor? color = null)
+{
+	if (color.HasValue)
+	{
+		Console.ForegroundColor = color.Value;
+	}
+
+	Console.WriteLine(text);
+	Console.ResetColor();
 }
 
 static int GetMaxLength<T>(IEnumerable<T> items, string column, Func<T, string> selector) =>
 	Math.Max(column.Length, items.Max(item => selector(item).Length));
+
+static string GetStatusString(Asset asset, DateTime today) =>
+	asset.GetStatus(today) switch
+	{
+		AssetStatus.Red => "RED",
+		AssetStatus.Yellow => "YELLOW",
+
+		_ => string.Empty
+	};
 
 static ConsoleColor GetStatusColor(AssetStatus status) =>
 	status switch

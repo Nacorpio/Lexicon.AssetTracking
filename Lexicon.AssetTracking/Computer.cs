@@ -1,6 +1,6 @@
 ﻿namespace Lexicon.AssetTracking
 {
-	internal class Computer : Asset
+	public class Computer : Asset
 	{
 		public Computer(
 			AssetType type, 

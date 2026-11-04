@@ -1,6 +1,6 @@
 ﻿namespace Lexicon.AssetTracking;
 
-internal class AssetManager 
+public class AssetManager 
 {
 	private readonly List<Asset> _assets = [];
 

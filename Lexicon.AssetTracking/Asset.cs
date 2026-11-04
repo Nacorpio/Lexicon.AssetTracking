@@ -1,6 +1,6 @@
 ﻿namespace Lexicon.AssetTracking;
 
-internal class Asset
+public class Asset
 {
 	public const int RedStatusMonths = 3;
 	public const int YellowStatusMonths = 6;
