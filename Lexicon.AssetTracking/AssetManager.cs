@@ -19,6 +19,7 @@ public class AssetManager
 		[.. _assets.Where(a => a.Type == type)];
 
 
-	public IReadOnlyList<Asset> GetSortedAssets() =>
-		[.. _assets.OrderBy(a => a.Type).ThenBy(a => a.PurchaseDate)];
+	public IReadOnlyList<Asset> GetSortedAssets() => [.. _assets
+		.OrderBy(a => a.Office.ToString())
+		.ThenBy(a => a.PurchaseDate)];
 }
