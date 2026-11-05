@@ -11,20 +11,23 @@ static void AddSampleAssets(AssetManager assetManager, DateTime today)
 	// Purchased exactly 3 years ago + N months => end of life is N months from today.
 	DateTime EndsIn(int months) => today.AddYears(-3).AddMonths(months);
 
-	assetManager.AddAsset(new Computer(AssetType.Laptop, "Apple", "MacBook Pro", OfficeLocation.Sweden,
+	assetManager.AddAsset(new Computer(1, AssetType.Laptop, "Apple", "MacBook Pro", OfficeLocation.Sweden,
 		2500m, EndsIn(-2)));                 // expired        -> RED
 
-	assetManager.AddAsset(new MobilePhone("Nokia", "XR20", OfficeLocation.Turkey,
+	assetManager.AddAsset(new MobilePhone(2, "Nokia", "XR20", OfficeLocation.Turkey,
 		800m, EndsIn(2)));                   // 2 months left  -> RED
 
-	assetManager.AddAsset(new Computer(AssetType.Laptop, "Asus", "ZenBook", OfficeLocation.USA,
+	assetManager.AddAsset(new Computer(3, AssetType.Laptop, "Asus", "ZenBook", OfficeLocation.USA,
 		1500m, EndsIn(4)));                   // 4 months left  -> YELLOW
 
-	assetManager.AddAsset(new Computer(AssetType.Desktop, "Dell", "OptiPlex 7080", OfficeLocation.Sweden,
+	assetManager.AddAsset(new Computer(4, AssetType.Desktop, "Dell", "OptiPlex 7080", OfficeLocation.Sweden,
 		1500m, today.AddYears(-1)));         // 2 years left   -> blank
 
-	assetManager.AddAsset(new MobilePhone("Samsung", "Galaxy S23", OfficeLocation.USA,
+	assetManager.AddAsset(new MobilePhone(5, "Samsung", "Galaxy S23", OfficeLocation.USA,
 		1000m, today.AddMonths(-6)));         // 2.5 years left -> blank
+
+	assetManager.AddAsset(new Tablet(6, "Apple", "iPad Pro", OfficeLocation.Turkey,
+		1200m, today.AddYears(-2).AddMonths(-3))); // 9 months left  -> blank
 }
 
 static void PrintAssets(AssetManager assetManager, DateTime today)

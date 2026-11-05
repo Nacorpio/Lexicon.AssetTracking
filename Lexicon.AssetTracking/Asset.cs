@@ -6,17 +6,21 @@ public abstract class Asset
 	public const int YellowStatusMonths = 6;
 
 	public Asset(
+		int id,
 		AssetType type, 
 		string brand, string model, 
 		OfficeLocation office, 
 		decimal priceUsd,
 		DateTime purchaseDate )
 	{
+		ArgumentOutOfRangeException.ThrowIfNegative(id);
+
 		ArgumentException.ThrowIfNullOrWhiteSpace(brand);
 		ArgumentException.ThrowIfNullOrWhiteSpace(model);
 
 		ArgumentOutOfRangeException.ThrowIfNegative(priceUsd);
-
+		
+		Id = id;
 		Type = type;
 		Brand = brand;
 		Model = model;
@@ -24,6 +28,8 @@ public abstract class Asset
 		PriceUsd = priceUsd;
 		PurchaseDate = purchaseDate;
 	}
+
+	public int Id { get; init; }
 
 	public AssetType Type { get; init; }
 
@@ -40,6 +46,7 @@ public abstract class Asset
 	public OfficeLocation Office { get; }
 
 	public DateTime EndOfLife => PurchaseDate.AddYears(3);
+	public TimeSpan Age => DateTime.Now - PurchaseDate;
 
 	public abstract string GetDescription();
 

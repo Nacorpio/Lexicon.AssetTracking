@@ -4,5 +4,6 @@ public enum AssetType
 {
 	Laptop,
 	Phone,
-	Desktop
+	Desktop,
+	Tablet
 }
