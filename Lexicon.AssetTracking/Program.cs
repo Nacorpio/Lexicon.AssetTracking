@@ -3,19 +3,44 @@
 var assetManager = new AssetManager();
 var today = DateTime.Today;
 
-while (true)
+try 
 {
-	ConsoleHelper.PrintLine();
-	ConsoleHelper.Print("ASSET TRACKING SYSTEM");
-	ConsoleHelper.PrintLine();
-
-	ConsoleHelper.PrintMenu();
-	ConsoleHelper.PrintLine();
-
-	switch (InputHelper.ReadEnum<MenuOption>("Select an option: "))
+	while (true)
 	{
+		ConsoleHelper.PrintLine();
+		ConsoleHelper.Print("ASSET TRACKING SYSTEM");
+		ConsoleHelper.PrintLine();
+
+		ConsoleHelper.PrintMenu();
+		ConsoleHelper.PrintLine();
+
+		if (!InputHelper.TryReadEnum<MenuOption>("Select an option: ", out var option))
+		{
+			ConsoleHelper.PrintLine("Invalid option. Please try again.", ConsoleColor.Red);
+			continue;
+		}
+
+		switch (option)
+		{
+			case MenuOption.Exit:
+				ConsoleHelper.PrintLine("Exiting the application. Goodbye!");
+				return;
+
+			default:
+				ConsoleHelper.PrintLine("Invalid option. Please try again.", ConsoleColor.Red);
+				break;
+		}
 	}
+} 
+catch (EndOfStreamException)
+{
+	ConsoleHelper.PrintLine("Input stream closed. Exiting the application.", ConsoleColor.Red);
 }
+catch (Exception ex)
+{
+	ConsoleHelper.PrintLine($"An unexpected error occurred: {ex.Message}", ConsoleColor.Red);
+}
+
 
 static void AddSampleAssets(AssetManager assetManager, DateTime today)
 {

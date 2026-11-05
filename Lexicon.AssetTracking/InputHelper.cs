@@ -2,44 +2,53 @@
 
 public static class InputHelper 
 {
+	public static bool TryHandleInput<T>(string prompt, Func<string, (bool isValid, T? value)> parseFunc, out T? result)
+	{
+		result = default;
+		Console.Write(prompt);
+
+		var input = Console.ReadLine() ?? throw new EndOfStreamException("Input cannot be null.");
+
+		var (isValid, value) = parseFunc(input);
+
+		if (isValid)
+			result = value;
+
+		return isValid;
+	}
+
 	public static string ReadNonEmptyString(string prompt)
 	{
 		while (true)
 		{
 			Console.Write(prompt);
 
-			var input = Console.ReadLine();
+			var input = Console.ReadLine() ?? throw new InvalidOperationException("Input cannot be null.");
 
 			if (!string.IsNullOrWhiteSpace(input))
 				return input;
 		}
 	}
 
-	public static decimal ReadDecimal(string prompt)
+	public static bool TryReadDecimal(string prompt, out decimal result)
 	{
-		while (true)
+		return TryHandleInput<decimal>(prompt, input =>
 		{
-			Console.Write(prompt);
+			var isValid = decimal.TryParse(input, out var value);
 
-			var input = Console.ReadLine();
-
-			if (decimal.TryParse(input, out var value))
-				return value;
-		}
+			return (isValid, isValid ? value : default);
+		},
+		out result);
 	}
 
-	public static TEnum ReadEnum<TEnum>(string prompt) where TEnum : struct, Enum
+	public static bool TryReadEnum<TEnum>(string prompt, out TEnum result) where TEnum : struct, Enum
 	{
-		while (true)
+		return TryHandleInput<TEnum>(prompt, input =>
 		{
-			Console.Write(prompt);
+			var isValid = Enum.TryParse<TEnum>(input, true, out var value) && Enum.IsDefined<TEnum>(value);
 
-			var input = Console.ReadLine();
-
-			if (Enum.TryParse<TEnum>(input, true, out var value))
-				return value;
-		}
+			return (isValid, isValid ? value : default);
+		}, 
+		out result);
 	}
-
-	
 }

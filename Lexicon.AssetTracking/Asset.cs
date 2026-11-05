@@ -46,7 +46,7 @@ public abstract class Asset
 	public OfficeLocation Office { get; }
 
 	public DateTime EndOfLife => PurchaseDate.AddYears(3);
-	public TimeSpan Age => DateTime.Now - PurchaseDate;
+	public TimeSpan Age => DateTime.Today - PurchaseDate;
 
 	public abstract string GetDescription();
 
