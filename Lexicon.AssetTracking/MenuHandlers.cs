@@ -2,6 +2,25 @@
 
 public static class MenuHandlers
 {
+	public static void HandleAddAsset(AssetManager assetManager)
+	{
+		ConsoleHelper.Print("ADD ASSET");
+		ConsoleHelper.PrintLine();
+
+		var officeNames = Enum.GetNames<OfficeLocation>();
+
+		var assetType = InputHelper.ReadEnum<AssetType>("Enter asset type (Laptop, Phone, Desktop, Tablet): ", "Invalid asset type. Please try again.");
+		var brand = InputHelper.ReadNonEmptyString("Enter brand: ", "Brand cannot be empty. Please try again.");
+		var model = InputHelper.ReadNonEmptyString("Enter model: ", "Model cannot be empty. Please try again.");
+		var office = InputHelper.ReadEnum<OfficeLocation>($"Enter office location ({string.Join(", ", officeNames)}): ", "Invalid office location. Please try again.");
+		var priceUsd = InputHelper.ReadDecimal("Enter price in USD: ", "Invalid price. Please enter a valid decimal number.");
+		var purchaseDate = InputHelper.ReadDate("Enter purchase date (yyyy-MM-dd): ", "Invalid date format. Please enter the date in yyyy-MM-dd format.");
+
+		var asset = assetManager.AddAsset(assetType, brand!, model!, office, priceUsd, purchaseDate);
+
+		ConsoleHelper.PrintLine($"Asset added: {asset.GetDescription()}", ConsoleColor.Green);
+	}
+
 	public static void HandleViewAssets(AssetManager assetManager, DateTime today)
 	{
 		const string Separator = " | ";
@@ -44,14 +63,12 @@ public static class MenuHandlers
 
 			ConsoleHelper.PrintRow(columnDefs, widths, Separator, cd => cd.ValueSelector(asset), color);
 		}
-
-		Console.ReadLine();
 	}
 
-	static string FormatPriceLocal(Asset asset) =>
-	$"{asset.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(asset.Office)}";
+	private static string FormatPriceLocal(Asset asset) =>
+		$"{asset.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(asset.Office)}";
 
-	static string GetStatusString(Asset asset, DateTime today) =>
+	private static string GetStatusString(Asset asset, DateTime today) =>
 		asset.GetStatus(today) switch
 		{
 			AssetStatus.Red => "RED",
@@ -60,7 +77,7 @@ public static class MenuHandlers
 			_ => string.Empty
 		};
 
-	public static ConsoleColor GetStatusColor(AssetStatus status) =>
+	private static ConsoleColor GetStatusColor(AssetStatus status) =>
 		status switch
 		{
 			AssetStatus.Red => ConsoleColor.Red,

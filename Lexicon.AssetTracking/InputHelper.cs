@@ -4,50 +4,56 @@ namespace Lexicon.AssetTracking;
 
 public static class InputHelper 
 {
-	public static bool TryHandleInput<T>(string prompt, Func<string, (bool isValid, T? value)> parseFunc, out T? result)
+	public static T ReadInput<T>(string prompt, Func<string, (bool isValid, T value)> parseFunc, string? errorMessage = null)
 	{
-		result = default;
-		Console.Write(prompt);
+		while (true)
+		{
+			Console.Write(prompt);
 
-		var input = Console.ReadLine() ?? throw new EndOfStreamException("Input cannot be null.");
+			var input = Console.ReadLine() ?? throw new InvalidOperationException("Input cannot be null.");
 
-		var (isValid, value) = parseFunc(input);
+			var (isValid, value) = parseFunc(input);
 
-		if (isValid)
-			result = value;
+			if (isValid)
+				return value;
 
-		return isValid;
+			Console.WriteLine(errorMessage ?? "Invalid input. Please try again.");
+		}
 	}
 
-	public static bool TryReadNonEmptyString(string prompt, out string? result)
+	public static string ReadNonEmptyString(string prompt, string? errorMessage = null)
 	{
-		return TryHandleInput<string>(prompt, input =>
-		{
-			var isValid = !string.IsNullOrWhiteSpace(input);
-			return (isValid, isValid ? input : default);
-		},
-		out result);
+		return ReadInput<string>(prompt, input =>
+			{
+				var isValid = !string.IsNullOrWhiteSpace(input);
+				return (isValid, input);
+			}, errorMessage);
 	}
 
-	public static bool TryReadDecimal(string prompt, out decimal result)
+	public static DateTime ReadDate(string prompt, string? errorMessage = null)
 	{
-		return TryHandleInput<decimal>(prompt, input =>
+		return ReadInput<DateTime>(prompt, input =>
 		{
-			var isValid = decimal.TryParse(input, CultureInfo.InvariantCulture, out var value) && value >= 0;
-
-			return (isValid, isValid ? value : default);
-		},
-		out result);
+			var isValid = DateTime.TryParseExact(input, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var value);
+			return (isValid, value);
+		}, errorMessage);
 	}
 
-	public static bool TryReadEnum<TEnum>(string prompt, out TEnum result) where TEnum : struct, Enum
+	public static decimal ReadDecimal(string prompt, string? errorMessage = null)
 	{
-		return TryHandleInput<TEnum>(prompt, input =>
+		return ReadInput<decimal>(prompt, input =>
 		{
-			var isValid = Enum.TryParse<TEnum>(input, true, out var value) && Enum.IsDefined<TEnum>(value);
+			var isValid = decimal.TryParse(input, NumberStyles.Number, CultureInfo.InvariantCulture, out var value);
+			return (isValid, value);
+		}, errorMessage);
+	}
 
-			return (isValid, isValid ? value : default);
-		}, 
-		out result);
+	public static TEnum ReadEnum<TEnum>(string prompt, string? errorMessage = null) where TEnum : struct, Enum
+	{
+		return ReadInput<TEnum>(prompt, input =>
+		{
+			var isValid = Enum.TryParse<TEnum>(input, true, out var value);
+			return (isValid, value);
+		}, errorMessage);
 	}
 }

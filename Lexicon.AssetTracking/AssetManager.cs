@@ -6,7 +6,7 @@ public class AssetManager
 
 	public int GetNextId() => _assets.Count == 0 ? 1 : _assets.Max(a => a.Id) + 1;
 
-	public void AddAsset(
+	public Asset AddAsset(
 		AssetType type,
 		string brand,
 		string model,
@@ -26,6 +26,8 @@ public class AssetManager
 		};
 
 		AddAsset(asset);
+
+		return asset;
 	}
 
 	public void AddAsset(Asset asset)

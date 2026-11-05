@@ -17,18 +17,21 @@ try
 		ConsoleHelper.PrintMenu();
 		ConsoleHelper.PrintLine();
 
-		if (!InputHelper.TryReadEnum<MenuOption>("Select an option: ", out var option))
+		var input = InputHelper.ReadInput<int>("Select an option: ", input =>
 		{
-			ConsoleHelper.PrintLine("Invalid option. Please try again.", ConsoleColor.Red);
-			Console.ReadLine();
-			
-			continue;
-		}
+			var isValid = int.TryParse(input, out var value) && Enum.IsDefined(typeof(MenuOption), value);
+			return (isValid, value);
+		}, 
+		"Invalid option. Please enter a valid number corresponding to a menu option.");
 
 		Console.Clear();
 
-		switch (option)
+		switch ((MenuOption)input)
 		{
+			case MenuOption.AddAsset:
+				MenuHandlers.HandleAddAsset(assetManager);
+				break;
+
 			case MenuOption.ViewAssets:
 				MenuHandlers.HandleViewAssets(assetManager, DateTime.Today);
 				break;
