@@ -1,4 +1,6 @@
-﻿namespace Lexicon.AssetTracking;
+﻿using System.Globalization;
+
+namespace Lexicon.AssetTracking;
 
 public static class InputHelper 
 {
@@ -17,24 +19,21 @@ public static class InputHelper
 		return isValid;
 	}
 
-	public static string ReadNonEmptyString(string prompt)
+	public static bool TryReadNonEmptyString(string prompt, out string? result)
 	{
-		while (true)
+		return TryHandleInput<string>(prompt, input =>
 		{
-			Console.Write(prompt);
-
-			var input = Console.ReadLine() ?? throw new InvalidOperationException("Input cannot be null.");
-
-			if (!string.IsNullOrWhiteSpace(input))
-				return input;
-		}
+			var isValid = !string.IsNullOrWhiteSpace(input);
+			return (isValid, isValid ? input : default);
+		},
+		out result);
 	}
 
 	public static bool TryReadDecimal(string prompt, out decimal result)
 	{
 		return TryHandleInput<decimal>(prompt, input =>
 		{
-			var isValid = decimal.TryParse(input, out var value);
+			var isValid = decimal.TryParse(input, CultureInfo.InvariantCulture, out var value) && value >= 0;
 
 			return (isValid, isValid ? value : default);
 		},
