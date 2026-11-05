@@ -4,8 +4,7 @@ public static class MenuHandlers
 {
 	public static void HandleAddAsset(AssetManager assetManager)
 	{
-		ConsoleHelper.Print("ADD ASSET");
-		ConsoleHelper.PrintLine();
+		ConsoleHelper.PrintMenuHeader("ADD ASSET", 50);
 
 		var officeNames = Enum.GetNames<OfficeLocation>();
 
@@ -23,8 +22,7 @@ public static class MenuHandlers
 
 	public static void HandleRemoveAsset(AssetManager assetManager)
 	{
-		ConsoleHelper.Print("REMOVE ASSET");
-		ConsoleHelper.PrintLine();
+		ConsoleHelper.PrintMenuHeader("REMOVE ASSET", 50);
 
 		var assetId = InputHelper.ReadInput<int>("Enter asset ID to remove: ", input =>
 		{
@@ -70,25 +68,25 @@ public static class MenuHandlers
 			new("Status", ColumnAlignment.Left, a => GetStatusString(a, today))
 		};
 
-		ConsoleHelper.Print("ASSET LIST");
-		ConsoleHelper.PrintLine();
+		ConsoleHelper.PrintMenuHeader("ASSET LIST", 50);
 
 		var assets = assetManager.GetSortedAssets();
 
 		if (assets.Count is 0)
 		{
-			Console.WriteLine("No assets found.");
+			ConsoleHelper.PrintLine("No assets found.", ConsoleColor.Yellow);
 			return;
 		}
 
-		int[] widths = [.. columnDefs.Select(cd =>
-		TableHelper.GetMaxLength(assets, cd.Header, cd.ValueSelector))];
+		int[] widths = [.. columnDefs
+			.Select(cd => TableHelper
+			.GetMaxLength(assets, cd.Header, cd.ValueSelector))];
 
-		var lineLength = widths.Sum() + (columnDefs.Count - 1) * Separator.Length;
+		var dividerLength = widths.Sum() + (columnDefs.Count - 1) * Separator.Length;
 
-		ConsoleHelper.PrintLine(new string('-', lineLength));
+		ConsoleHelper.PrintDivider(dividerLength);
 		ConsoleHelper.PrintRow(columnDefs, widths, Separator, cd => cd.Header);
-		ConsoleHelper.PrintLine(new string('-', lineLength));
+		ConsoleHelper.PrintDivider(dividerLength);
 
 		foreach (var asset in assets)
 		{

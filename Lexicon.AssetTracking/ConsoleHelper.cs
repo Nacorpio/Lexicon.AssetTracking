@@ -43,6 +43,18 @@ public static class ConsoleHelper
 	public static void PrintLine() => 
 		Console.WriteLine();
 
+
+	public static void PrintDivider(int length, char character = '-') =>
+		ConsoleHelper.PrintLine(new string(character, length));
+
+	public static void PrintMenuHeader(string header, int length)
+	{
+		ConsoleHelper.PrintDivider(length);
+		ConsoleHelper.PrintLine(header, ConsoleColor.Cyan);
+		ConsoleHelper.PrintDivider(length);
+	}
+
+
 	public static void PrintRow(
 		List<ColumnDefinition> columnDefs,
 		int[] widths,

@@ -11,8 +11,7 @@ try
 	{
 		Console.Clear();
 
-		ConsoleHelper.PrintLine("ASSET TRACKING SYSTEM", ConsoleColor.Green);
-		ConsoleHelper.PrintLine();
+		ConsoleHelper.PrintMenuHeader("ASSET TRACKING SYSTEM", 50);
 
 		ConsoleHelper.PrintMenu();
 		ConsoleHelper.PrintLine();
@@ -49,7 +48,9 @@ try
 				break;
 		}
 
+		ConsoleHelper.PrintLine();
 		ConsoleHelper.PrintLine("Press ENTER to return to the main menu...");
+
 		Console.ReadLine();
 	}
 } 
@@ -71,4 +72,5 @@ static void AddSampleAssets(AssetManager assetManager, DateTime today)
 	assetManager.AddAsset(AssetType.Laptop, "Dell", "XPS 13", OfficeLocation.Sweden, 1200m, EndsIn(0));
 	assetManager.AddAsset(AssetType.Phone, "Apple", "iPhone 12", OfficeLocation.Turkey, 800m, EndsIn(6));
 	assetManager.AddAsset(AssetType.Tablet, "Samsung", "Galaxy Tab S7", OfficeLocation.USA, 650m, EndsIn(3));
+	assetManager.AddAsset(AssetType.Desktop, "HP", "Pavilion", OfficeLocation.Sweden, 900m, EndsIn(12));
 }

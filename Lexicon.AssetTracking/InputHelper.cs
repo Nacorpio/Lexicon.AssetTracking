@@ -4,7 +4,10 @@ namespace Lexicon.AssetTracking;
 
 public static class InputHelper 
 {
-	public static T ReadInput<T>(string prompt, Func<string, (bool isValid, T value)> parseFunc, string? errorMessage = null)
+	public static T ReadInput<T>(
+		string prompt, 
+		Func<string, (bool isValid, T value)> parseFunc, 
+		string? errorMessage = null)
 	{
 		while (true)
 		{
@@ -39,7 +42,7 @@ public static class InputHelper
 			var isValid = !string.IsNullOrWhiteSpace(input);
 			return (isValid, input);
 		}, 
-		errorMessage);
+		errorMessage ?? "Input cannot be empty. Please try again.");
 	}
 
 	public static DateTime ReadDate(string prompt, string? errorMessage = null)
@@ -49,7 +52,7 @@ public static class InputHelper
 			var isValid = DateTime.TryParseExact(input, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var value);
 			return (isValid, value);
 		}, 
-		errorMessage);
+		errorMessage ?? "Invalid date format. Please enter the date in yyyy-MM-dd format.");
 	}
 
 	public static decimal ReadDecimal(string prompt, string? errorMessage = null)
@@ -60,7 +63,7 @@ public static class InputHelper
 			return (isValid, value);
 
 		}, 
-		errorMessage);
+		errorMessage ?? "Invalid decimal format. Please enter a valid decimal number.");
 	}
 
 	public static TEnum ReadEnum<TEnum>(string prompt, string? errorMessage = null) where TEnum : struct, Enum
@@ -71,6 +74,6 @@ public static class InputHelper
 			return (isValid, value);
 
 		},
-		errorMessage);
+		errorMessage ?? "Invalid input. Please enter a valid value.");
 	}
 }
