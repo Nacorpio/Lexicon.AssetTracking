@@ -2,6 +2,26 @@
 
 public static class ConsoleHelper
 {
+	private readonly static Dictionary<MenuOption, string> MenuOptionTexts = new()
+	{
+		{ MenuOption.AddAsset, "Add a new asset" },
+		{ MenuOption.ViewAssets, "List all assets" },
+		{ MenuOption.SortAssets, "Sort assets"  },
+		{ MenuOption.SearchAssets, "Search assets" },
+		{ MenuOption.RemoveAsset, "Remove an asset" },
+		{ MenuOption.Exit, "Exit" }
+	};
+
+	public static void PrintMenu()
+	{
+		ConsoleHelper.PrintLine("MENU OPTIONS", ConsoleColor.Cyan);
+		
+		foreach (var option in Enum.GetValues<MenuOption>())
+		{
+			ConsoleHelper.PrintLine($"{(int)option}. {MenuOptionTexts[option]}");
+		}
+	}
+
 	public static void Print(string text, ConsoleColor? color = null)
 	{
 		if (color.HasValue)

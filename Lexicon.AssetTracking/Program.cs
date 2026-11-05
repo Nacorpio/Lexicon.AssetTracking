@@ -3,8 +3,19 @@
 var assetManager = new AssetManager();
 var today = DateTime.Today;
 
-AddSampleAssets(assetManager, today);
-PrintAssets(assetManager, today);
+while (true)
+{
+	ConsoleHelper.PrintLine();
+	ConsoleHelper.Print("ASSET TRACKING SYSTEM");
+	ConsoleHelper.PrintLine();
+
+	ConsoleHelper.PrintMenu();
+	ConsoleHelper.PrintLine();
+
+	switch (InputHelper.ReadEnum<MenuOption>("Select an option: "))
+	{
+	}
+}
 
 static void AddSampleAssets(AssetManager assetManager, DateTime today)
 {
