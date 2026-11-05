@@ -21,6 +21,37 @@ public static class MenuHandlers
 		ConsoleHelper.PrintLine($"Asset added: {asset.GetDescription()}", ConsoleColor.Green);
 	}
 
+	public static void HandleRemoveAsset(AssetManager assetManager)
+	{
+		ConsoleHelper.Print("REMOVE ASSET");
+		ConsoleHelper.PrintLine();
+
+		var assetId = InputHelper.ReadInput<int>("Enter asset ID to remove: ", input =>
+		{
+			var isValid = int.TryParse(input, out var value) && value > 0;
+			return (isValid, value);
+		}, 
+		"Invalid asset ID. Please enter a positive integer.");
+
+		if (!assetManager.ContainsAsset(assetId))
+		{
+			ConsoleHelper.PrintLine($"Asset with ID {assetId} not found.", ConsoleColor.Red);
+			return;
+		}
+
+		bool confirmation = InputHelper.ReadConfirmation(
+			prompt: "Are you sure you want to remove this asset? (y/n): ",
+			errorMessage: "Invalid input. Please enter 'y' for yes or 'n' for no.");
+
+		if (!confirmation)
+		{
+			ConsoleHelper.PrintLine("Asset removal canceled.", ConsoleColor.Yellow);
+			return;
+		}
+
+		assetManager.RemoveAsset(assetId);
+	}
+
 	public static void HandleViewAssets(AssetManager assetManager, DateTime today)
 	{
 		const string Separator = " | ";

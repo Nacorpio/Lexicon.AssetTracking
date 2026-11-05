@@ -35,6 +35,18 @@ public class AssetManager
 		_assets.Add(asset);
 	}
 
+	public bool RemoveAsset(int id)
+	{
+		var asset = _assets.FirstOrDefault(a => a.Id == id);
+
+		if (asset is null)
+			return false;
+
+		return _assets.Remove(asset);
+	}
+
+	public bool ContainsAsset(int id) => _assets.Any(a => a.Id == id);
+
 	public IReadOnlyList<Asset> GetAssets() => _assets;
 
 

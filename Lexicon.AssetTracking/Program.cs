@@ -36,6 +36,10 @@ try
 				MenuHandlers.HandleViewAssets(assetManager, DateTime.Today);
 				break;
 
+			case MenuOption.RemoveAsset:
+				MenuHandlers.HandleRemoveAsset(assetManager);
+				break;
+
 			case MenuOption.Exit:
 				ConsoleHelper.PrintLine("Exiting the application. Goodbye!");
 				return;
