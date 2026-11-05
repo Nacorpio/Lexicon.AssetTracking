@@ -40,7 +40,7 @@ public static class MenuHandlers
 		}
 
 		bool confirmation = InputHelper.ReadConfirmation(
-			prompt: "Are you sure you want to remove this asset? (y/n): ",
+			prompt: $"Are you sure you want to remove the asset with ID {assetId}? (y/n): ",
 			errorMessage: "Invalid input. Please enter 'y' for yes or 'n' for no.");
 
 		if (!confirmation)
@@ -50,6 +50,8 @@ public static class MenuHandlers
 		}
 
 		assetManager.RemoveAsset(assetId);
+
+		ConsoleHelper.PrintLine($"Asset with ID {assetId} has been removed.", ConsoleColor.Green);
 	}
 
 	public static void HandleViewAssets(AssetManager assetManager, DateTime today)
