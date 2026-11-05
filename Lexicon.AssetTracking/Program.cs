@@ -3,12 +3,15 @@
 var assetManager = new AssetManager();
 var today = DateTime.Today;
 
+AddSampleAssets(assetManager, today);
+
 try 
 {
 	while (true)
 	{
-		ConsoleHelper.PrintLine();
-		ConsoleHelper.Print("ASSET TRACKING SYSTEM");
+		Console.Clear();
+
+		ConsoleHelper.PrintLine("ASSET TRACKING SYSTEM", ConsoleColor.Green);
 		ConsoleHelper.PrintLine();
 
 		ConsoleHelper.PrintMenu();
@@ -17,11 +20,19 @@ try
 		if (!InputHelper.TryReadEnum<MenuOption>("Select an option: ", out var option))
 		{
 			ConsoleHelper.PrintLine("Invalid option. Please try again.", ConsoleColor.Red);
+			Console.ReadLine();
+			
 			continue;
 		}
 
+		Console.Clear();
+
 		switch (option)
 		{
+			case MenuOption.ViewAssets:
+				PrintAssets(assetManager, DateTime.Today);
+				break;
+
 			case MenuOption.Exit:
 				ConsoleHelper.PrintLine("Exiting the application. Goodbye!");
 				return;
@@ -30,6 +41,9 @@ try
 				ConsoleHelper.PrintLine("Invalid option. Please try again.", ConsoleColor.Red);
 				break;
 		}
+
+		ConsoleHelper.PrintLine("Press ENTER to return to the main menu...");
+		Console.ReadLine();
 	}
 } 
 catch (EndOfStreamException)
@@ -47,23 +61,9 @@ static void AddSampleAssets(AssetManager assetManager, DateTime today)
 	// Purchased exactly 3 years ago + N months => end of life is N months from today.
 	DateTime EndsIn(int months) => today.AddYears(-3).AddMonths(months);
 
-	assetManager.AddAsset(new Computer(1, AssetType.Laptop, "Apple", "MacBook Pro", OfficeLocation.Sweden,
-		2500m, EndsIn(-2)));                 // expired        -> RED
-
-	assetManager.AddAsset(new MobilePhone(2, "Nokia", "XR20", OfficeLocation.Turkey,
-		800m, EndsIn(2)));                   // 2 months left  -> RED
-
-	assetManager.AddAsset(new Computer(3, AssetType.Laptop, "Asus", "ZenBook", OfficeLocation.USA,
-		1500m, EndsIn(4)));                   // 4 months left  -> YELLOW
-
-	assetManager.AddAsset(new Computer(4, AssetType.Desktop, "Dell", "OptiPlex 7080", OfficeLocation.Sweden,
-		1500m, today.AddYears(-1)));         // 2 years left   -> blank
-
-	assetManager.AddAsset(new MobilePhone(5, "Samsung", "Galaxy S23", OfficeLocation.USA,
-		1000m, today.AddMonths(-6)));         // 2.5 years left -> blank
-
-	assetManager.AddAsset(new Tablet(6, "Apple", "iPad Pro", OfficeLocation.Turkey,
-		1200m, today.AddYears(-2).AddMonths(-3))); // 9 months left  -> blank
+	assetManager.AddAsset(AssetType.Laptop, "Dell", "XPS 13", OfficeLocation.Sweden, 1200m, EndsIn(0));
+	assetManager.AddAsset(AssetType.Phone, "Apple", "iPhone 12", OfficeLocation.Turkey, 800m, EndsIn(6));
+	assetManager.AddAsset(AssetType.Tablet, "Samsung", "Galaxy Tab S7", OfficeLocation.USA, 650m, EndsIn(3));
 }
 
 static void PrintAssets(AssetManager assetManager, DateTime today)
@@ -108,6 +108,8 @@ static void PrintAssets(AssetManager assetManager, DateTime today)
 
 		ConsoleHelper.PrintRow(columnDefs, widths, Separator, cd => cd.ValueSelector(asset), color);
 	}
+
+	Console.ReadLine();
 }
 
 static string FormatPriceLocal(Asset asset) =>
