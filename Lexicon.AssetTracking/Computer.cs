@@ -14,4 +14,6 @@ public class Computer : Asset
 		if (type is not (AssetType.Laptop or AssetType.Desktop))
 			throw new ArgumentException("Invalid asset type for `Computer`.", nameof(type));
 	}
+
+	public override string GetDescription() => $"Computer: {Brand} {Model}";
 }

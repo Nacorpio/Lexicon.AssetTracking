@@ -11,4 +11,6 @@ public class MobilePhone : Asset
 		base(AssetType.Phone, brand, model, office, priceUsd, purchaseDate)
 	{
 	}
+
+	public override string GetDescription() => $"Phone: {Brand} {Model}";
 }

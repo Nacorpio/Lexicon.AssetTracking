@@ -41,6 +41,8 @@ public abstract class Asset
 
 	public DateTime EndOfLife => PurchaseDate.AddYears(3);
 
+	public abstract string GetDescription();
+
 	public AssetStatus GetStatus(DateTime currentDate)
 	{
 		var redFrom = EndOfLife.AddMonths(-RedStatusMonths);
