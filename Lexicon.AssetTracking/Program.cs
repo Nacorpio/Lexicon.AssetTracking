@@ -28,15 +28,19 @@ try
 		switch ((MenuOption)input)
 		{
 			case MenuOption.AddAsset:
-				MenuHandlers.HandleAddAsset(assetManager);
+				MenuHandlers.HandleAddAsset(assetManager, today);
 				break;
 
 			case MenuOption.ViewAssets:
-				MenuHandlers.HandleViewAssets(assetManager, DateTime.Today);
+				MenuHandlers.HandleViewAssets(assetManager, today);
 				break;
 
 			case MenuOption.RemoveAsset:
 				MenuHandlers.HandleRemoveAsset(assetManager);
+				break;
+
+			case MenuOption.SearchAssets:
+				MenuHandlers.HandleSearchAssets(assetManager, today);
 				break;
 
 			case MenuOption.Exit:

@@ -45,14 +45,17 @@ public static class InputHelper
 		errorMessage ?? "Input cannot be empty. Please try again.");
 	}
 
-	public static DateTime ReadDate(string prompt, string? errorMessage = null)
+	public static DateTime ReadDate(string prompt, DateTime maxDate, string? errorMessage = null)
 	{
 		return ReadInput<DateTime>(prompt, input =>
 		{
-			var isValid = DateTime.TryParseExact(input, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var value);
+			var isValid = DateTime
+				.TryParseExact(input, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var value) 
+				&& value <= maxDate;
+
 			return (isValid, value);
 		}, 
-		errorMessage ?? "Invalid date format. Please enter the date in yyyy-MM-dd format.");
+		errorMessage ?? $"Invalid date format. Please enter a valid date in yyyy-MM-dd format.");
 	}
 
 	public static decimal ReadDecimal(string prompt, string? errorMessage = null)

@@ -7,5 +7,12 @@ public enum MenuOption
 	SortAssets = 3,
 	SearchAssets = 4,
 	RemoveAsset = 5,
+
 	Exit = 6
+}
+
+public enum SearchMenuOption 
+{
+	ByBrand,
+	ByModel
 }

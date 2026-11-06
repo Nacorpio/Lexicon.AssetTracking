@@ -2,18 +2,31 @@
 
 public static class MenuHandlers
 {
-	public static void HandleAddAsset(AssetManager assetManager)
+	private static IReadOnlyList<ColumnDefinition> GetColumnDefs(DateTime today) =>
+	[
+		new("Office", ColumnAlignment.Left, a => a.Office.ToString()),
+		new("Type", ColumnAlignment.Left, a => a.Type.ToString()),
+		new("Brand", ColumnAlignment.Left, a => a.Brand),
+		new("Model", ColumnAlignment.Left, a => a.Model),
+		new("Purchase Date", ColumnAlignment.Left, a => a.PurchaseDate.ToString("yyyy-MM-dd")),
+		new("Price Local", ColumnAlignment.Right, a => FormatPriceLocal(a)),
+		new("Price USD", ColumnAlignment.Right, a => $"{a.PriceUsd:F2} USD"),
+		new("Status", ColumnAlignment.Left, a => GetStatusString(a, today))
+	];
+
+	public static void HandleAddAsset(AssetManager assetManager, DateTime today)
 	{
 		ConsoleHelper.PrintMenuHeader("ADD ASSET", 50);
 
+		var assetNames = Enum.GetNames<AssetType>();
 		var officeNames = Enum.GetNames<OfficeLocation>();
 
-		var assetType = InputHelper.ReadEnum<AssetType>("Enter asset type (Laptop, Phone, Desktop, Tablet): ", "Invalid asset type. Please try again.");
+		var assetType = InputHelper.ReadEnum<AssetType>($"Enter asset type ({string.Join(", ", assetNames)}): ", "Invalid asset type. Please try again.");
 		var brand = InputHelper.ReadNonEmptyString("Enter brand: ", "Brand cannot be empty. Please try again.");
 		var model = InputHelper.ReadNonEmptyString("Enter model: ", "Model cannot be empty. Please try again.");
 		var office = InputHelper.ReadEnum<OfficeLocation>($"Enter office location ({string.Join(", ", officeNames)}): ", "Invalid office location. Please try again.");
 		var priceUsd = InputHelper.ReadDecimal("Enter price in USD: ", "Invalid price. Please enter a valid decimal number.");
-		var purchaseDate = InputHelper.ReadDate("Enter purchase date (yyyy-MM-dd): ", "Invalid date format. Please enter the date in yyyy-MM-dd format.");
+		var purchaseDate = InputHelper.ReadDate("Enter purchase date (yyyy-MM-dd): ", today, "Date must be yyyy-MM-dd and not in the future.");
 
 		var asset = assetManager.AddAsset(assetType, brand!, model!, office, priceUsd, purchaseDate);
 
@@ -54,47 +67,35 @@ public static class MenuHandlers
 
 	public static void HandleViewAssets(AssetManager assetManager, DateTime today)
 	{
-		const string Separator = " | ";
-
-		var columnDefs = new List<ColumnDefinition>
-		{
-			new("Office", ColumnAlignment.Left, a => a.Office.ToString()),
-			new("Type", ColumnAlignment.Left, a => a.Type.ToString()),
-			new("Brand", ColumnAlignment.Left, a => a.Brand),
-			new("Model", ColumnAlignment.Left, a => a.Model),
-			new("Purchase Date", ColumnAlignment.Left, a => a.PurchaseDate.ToString("yyyy-MM-dd")),
-			new("Price Local", ColumnAlignment.Right, a => FormatPriceLocal(a)),
-			new("Price USD", ColumnAlignment.Right, a => $"{a.PriceUsd:F2} USD"),
-			new("Status", ColumnAlignment.Left, a => GetStatusString(a, today))
-		};
-
 		ConsoleHelper.PrintMenuHeader("ASSET LIST", 50);
+
+		const string Separator = " | ";
 
 		var assets = assetManager.GetSortedAssets();
 
-		if (assets.Count is 0)
-		{
-			ConsoleHelper.PrintLine("No assets found.", ConsoleColor.Yellow);
-			return;
-		}
-
-		int[] widths = [.. columnDefs
-			.Select(cd => TableHelper
-			.GetMaxLength(assets, cd.Header, cd.ValueSelector))];
-
-		var dividerLength = widths.Sum() + (columnDefs.Count - 1) * Separator.Length;
-
-		ConsoleHelper.PrintDivider(dividerLength);
-		ConsoleHelper.PrintRow(columnDefs, widths, Separator, cd => cd.Header);
-		ConsoleHelper.PrintDivider(dividerLength);
-
-		foreach (var asset in assets)
-		{
-			var color = GetStatusColor(asset.GetStatus(today));
-
-			ConsoleHelper.PrintRow(columnDefs, widths, Separator, cd => cd.ValueSelector(asset), color);
-		}
+		ConsoleHelper.PrintTable(GetColumnDefs(today), assets, Separator, today);
 	}
+
+	public static void HandleSearchAssets(AssetManager assetManager, DateTime today)
+	{
+		ConsoleHelper.PrintMenuHeader("SEARCH ASSETS", 50);
+
+		var searchOption = InputHelper.ReadEnum<SearchMenuOption>("Search by (ByBrand, ByModel): ", "Invalid option. Please try again.");
+		string searchTerm = InputHelper.ReadNonEmptyString("Enter search term: ", "Search term cannot be empty. Please try again.");
+
+		IReadOnlyList<Asset> results = searchOption switch
+		{
+			SearchMenuOption.ByBrand => assetManager.SearchAssetsByBrand(searchTerm),
+			SearchMenuOption.ByModel => assetManager.SearchAssetsByModel(searchTerm),
+
+			_ => []
+		};
+
+		const string Separator = " | ";
+
+		ConsoleHelper.PrintTable(GetColumnDefs(today), results, Separator, today);
+	}
+
 
 	private static string FormatPriceLocal(Asset asset) =>
 		$"{asset.PriceLocal:F2} {CurrencyConverter.GetCurrencyCode(asset.Office)}";
@@ -106,14 +107,5 @@ public static class MenuHandlers
 			AssetStatus.Yellow => "YELLOW",
 
 			_ => string.Empty
-		};
-
-	private static ConsoleColor GetStatusColor(AssetStatus status) =>
-		status switch
-		{
-			AssetStatus.Red => ConsoleColor.Red,
-			AssetStatus.Yellow => ConsoleColor.Yellow,
-
-			_ => ConsoleColor.White
 		};
 }

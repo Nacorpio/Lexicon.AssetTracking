@@ -9,6 +9,7 @@ public static class ConsoleHelper
 		{ MenuOption.SortAssets, "Sort assets"  },
 		{ MenuOption.SearchAssets, "Search assets" },
 		{ MenuOption.RemoveAsset, "Remove an asset" },
+
 		{ MenuOption.Exit, "Exit" }
 	};
 
@@ -56,7 +57,7 @@ public static class ConsoleHelper
 
 
 	public static void PrintRow(
-		List<ColumnDefinition> columnDefs,
+		IReadOnlyList<ColumnDefinition> columnDefs,
 		int[] widths,
 		string separator,
 		Func<ColumnDefinition, string> getText,
@@ -72,4 +73,42 @@ public static class ConsoleHelper
 
 		ConsoleHelper.PrintLine();
 	}
+
+	public static void PrintTable(
+		IReadOnlyList<ColumnDefinition> columnDefs,
+		IReadOnlyList<Asset> assets,
+		string separator,
+		DateTime today)
+	{
+		if (assets.Count is 0)
+		{
+			ConsoleHelper.PrintLine("No assets found.", ConsoleColor.Yellow);
+			return;
+		}
+
+		int[] widths = [.. columnDefs
+			.Select(cd => TableHelper
+			.GetMaxLength(assets, cd.Header, cd.ValueSelector))];
+
+		var dividerLength = widths.Sum() + (columnDefs.Count - 1) * separator.Length;
+
+		ConsoleHelper.PrintDivider(dividerLength);
+		ConsoleHelper.PrintRow(columnDefs, widths, separator, cd => cd.Header);
+		ConsoleHelper.PrintDivider(dividerLength);
+
+		foreach (var asset in assets)
+		{
+			var color = GetStatusColor(asset.GetStatus(today));
+			ConsoleHelper.PrintRow(columnDefs, widths, separator, cd => cd.ValueSelector(asset), color);
+		}
+	}
+
+	private static ConsoleColor GetStatusColor(AssetStatus status) =>
+		status switch
+		{
+			AssetStatus.Red => ConsoleColor.Red,
+			AssetStatus.Yellow => ConsoleColor.Yellow,
+
+			_ => ConsoleColor.White
+		};
 }
