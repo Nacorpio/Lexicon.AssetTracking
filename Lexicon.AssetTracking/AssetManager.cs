@@ -57,6 +57,23 @@ public class AssetManager
 		.Where(a => a.Model.Contains(model, StringComparison.OrdinalIgnoreCase))];
 
 
+	public IReadOnlyList<Asset> GetAssetsSorted(SortMenuOption sortOption) => sortOption switch
+	{
+		SortMenuOption.ByOfficeThenByDate => _assets
+			.OrderBy(a => a.Office.ToString())
+			.ThenBy(a => a.PurchaseDate)
+			.ToList(),
+
+		SortMenuOption.ByTypeThenByDate => [.. _assets
+			.OrderBy(a => a.Type)
+			.ThenBy(a => a.PurchaseDate)],
+
+		SortMenuOption.ByPurchaseDate => [.. _assets
+			.OrderBy(a => a.PurchaseDate)],
+
+		_ => throw new ArgumentException("Invalid sort option.", nameof(sortOption))
+	};
+
 	public IReadOnlyList<Asset> GetSortedAssets() => [.. _assets
 		.OrderBy(a => a.Office.ToString())
 		.ThenBy(a => a.PurchaseDate)];

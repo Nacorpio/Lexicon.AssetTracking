@@ -11,8 +11,9 @@ public enum MenuOption
 	Exit = 6
 }
 
-public enum SearchMenuOption 
+public enum SortMenuOption
 {
-	ByBrand,
-	ByModel
+	ByOfficeThenByDate = 1,
+	ByTypeThenByDate = 2,
+	ByPurchaseDate = 3
 }

@@ -43,6 +43,10 @@ try
 				MenuHandlers.HandleSearchAssets(assetManager, today);
 				break;
 
+			case MenuOption.SortAssets:
+				MenuHandlers.HandleSortAssets(assetManager, today);
+				break;
+
 			case MenuOption.Exit:
 				ConsoleHelper.PrintLine("Exiting the application. Goodbye!");
 				return;

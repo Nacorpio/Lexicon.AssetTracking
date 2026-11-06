@@ -30,6 +30,7 @@ public static class InputHelper
 		{
 			var isValid = input.Equals("y", StringComparison.OrdinalIgnoreCase) || input.Equals("n", StringComparison.OrdinalIgnoreCase);
 			var value = input.Equals("y", StringComparison.OrdinalIgnoreCase);
+
 			return (isValid, value);
 		},
 		errorMessage ?? "Invalid input. Please enter 'y' for yes or 'n' for no.");
