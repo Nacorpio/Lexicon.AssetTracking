@@ -80,7 +80,9 @@ public static class MenuHandlers
 	{
 		ConsoleHelper.PrintMenuHeader("SEARCH ASSETS", 50);
 
-		var searchOption = InputHelper.ReadEnum<SearchMenuOption>("Search by (ByBrand, ByModel): ", "Invalid option. Please try again.");
+		var options = Enum.GetNames<SearchMenuOption>();
+
+		var searchOption = InputHelper.ReadEnum<SearchMenuOption>($"Search by ({string.Join(", ", options)}): ", "Invalid option. Please try again.");
 		string searchTerm = InputHelper.ReadNonEmptyString("Enter search term: ", "Search term cannot be empty. Please try again.");
 
 		IReadOnlyList<Asset> results = searchOption switch
